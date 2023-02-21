@@ -14,6 +14,8 @@
 #include <fstream>
 #include <iostream>
 #include "params.h"
+#include <cmath>
+
 using namespace rapidjson;
 
 gchar *b64encode(float *vec, int size);
@@ -28,7 +30,7 @@ bool parse_rtsp_src_info(std::string filename, std::vector<std::string> &name,
 void generate_ts_rfc3339(char *buf, int buf_size);
 std::vector<std::string> parseListJson(std::string response_json);
 float clip(float x);
-
+float calculate_head_pose_from_raw_output(float *raw);
 void freeXFaceMOTMsgMeta(XFaceMOTMsgMeta *msg_meta_content);
 void freeNvDsFaceMsgData(NvDsFaceMsgData *msg_meta_content);
 void freeXFaceVisualMsg(XFaceVisualMsg *msg_meta_content);

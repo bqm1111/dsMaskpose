@@ -1,4 +1,4 @@
-import tensorrt as trt
+#import tensorrt as trt
 from maskpose.maskpose import MaskPose
 from maskpose.models import MergeResNet
 from maskpose.maskpose import load_filtered_state_dict
@@ -32,4 +32,10 @@ if __name__ == '__main__':
     model.eval()
     
     dummy_input = torch.randn(1, 3, 112, 112)
-    torch.onnx.export(model, dummy_input, "maskpose.onnx", input_names=["conv1"], output_names=["mask", "yaw", "pitch", "roll"], verbose=True, export_params=True)
+    torch.onnx.export(model, dummy_input, "maskpose.onnx", input_names=["conv1"], output_names=["mask", "yaw", "pitch", "roll"], 
+                      verbose=True, export_params=True,
+                      dynamic_axes={'conv1' : {0 : 'batch_size'},    # variable length axes
+                                    'mask' : {0 : 'batch_size'},
+                                    'yaw' : {0 : 'batch_size'},
+                                    'pitch' : {0 : 'batch_size'},
+                                    'roll' : {0 : 'batch_size'}})

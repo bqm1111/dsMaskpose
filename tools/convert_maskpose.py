@@ -31,7 +31,7 @@ if __name__ == "__main__":
 
     profile = builder.create_optimization_profile();
     profile.set_shape(
-        "input", (1, 3, 112, 112), (args.max_batch_size//2, 3, 112, 112), 
+        "conv1", (1, 3, 112, 112), (args.max_batch_size//2, 3, 112, 112), 
         (args.max_batch_size, 3, 112, 112)
     ) 
     config.add_optimization_profile(profile)

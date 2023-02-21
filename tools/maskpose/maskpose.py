@@ -6,7 +6,7 @@ import torch
 from torchvision.models.resnet import BasicBlock
 from .models import MergeResNet
 
-# from models import MergeResNet
+#from models import MergeResNet
 
 
 def preprocess(
@@ -69,7 +69,7 @@ class MaskPose:
 
         roll = softmax_temperature(roll.data, 1)
         roll = torch.sum(roll * self.idx_tensor, 1).to(self.device) * 3 - 93
-
+        print(mask)
         return torch.argmax(mask).item(), yaw.item(), pitch.item(), roll.item()
 
 

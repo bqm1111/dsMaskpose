@@ -264,7 +264,7 @@ void NvInferFaceBin::sgie_output_callback(GstBuffer *buf,
 {
     user_callback_data *callback_data = reinterpret_cast<user_callback_data *>(user_data);
     /* Find the only output layer */
-    NvDsInferLayerInfo *output_layer_info;
+    std::vector<NvDsInferLayerInfo *> output_layer_info;
     NvDsInferLayerInfo *input_layer_info;
     for (int i = 0; i < num_layers; i++)
     {
@@ -275,7 +275,7 @@ void NvInferFaceBin::sgie_output_callback(GstBuffer *buf,
         }
         else
         {
-            output_layer_info = info;
+            output_layer_info.push_back(info);
             // TODO: the info also include input tensor, which is the 3x112x112 input. COuld be use for something.
         }
     }
@@ -286,8 +286,6 @@ void NvInferFaceBin::sgie_output_callback(GstBuffer *buf,
     for (NvDsMetaList *l_frame = batch_meta->frame_meta_list; l_frame != NULL; l_frame = l_frame->next)
     {
         NvDsFrameMeta *frame_meta = reinterpret_cast<NvDsFrameMeta *>(l_frame->data);
-        // QDTLog::info("width and height = {} - {}", frame_meta->source_frame_width, frame_meta->source_frame_height);
-        std::vector<NvDsMOTMsgData *> mot_sub_meta_list;
 
         for (NvDsMetaList *l_obj = frame_meta->obj_meta_list; l_obj != NULL; l_obj = l_obj->next)
         {
@@ -300,11 +298,26 @@ void NvInferFaceBin::sgie_output_callback(GstBuffer *buf,
                     if (user_meta->base_meta.meta_type == (NvDsMetaType)NVDS_OBJ_USER_META_FACE)
                     {
                         NvDsFaceMetaData *faceMeta = reinterpret_cast<NvDsFaceMetaData *>(user_meta->user_meta_data);
-
-                        const int feature_size = output_layer_info->inferDims.numElements;
-                        float *cur_feature = reinterpret_cast<float *>(output_layer_info->buffer) +
-                                             faceMeta->aligned_index * feature_size;
-                        memcpy(faceMeta->feature, cur_feature, feature_size * sizeof(float));
+                        for (int i = 0; i < output_layer_info.size(); i++)
+                        {
+                            const int feature_size = output_layer_info[i]->inferDims.numElements;
+                            // printf("Name and size = %s - %d\n", output_layer_info[i]->layerName, feature_size);
+                            if (std::string(output_layer_info[i]->layerName) != "mask")
+                            {
+                                float *output_raw = reinterpret_cast<float *>(output_layer_info[i]->buffer) +
+                                                    faceMeta->aligned_index * 62;
+                                printf("%s = %f\n", output_layer_info[i]->layerName, calculate_head_pose_from_raw_output(output_raw + i * 62));
+                            }
+                            else
+                            {
+                                float *output_raw = reinterpret_cast<float *>(output_layer_info[i]->buffer) +
+                                                    faceMeta->aligned_index * 2;
+                                float no_masked = output_raw[0];
+                                float masked = output_raw[1];
+                                printf("non - mask = %f - %f\n", no_masked, masked);
+                                printf("Mask = %d\n", (no_masked > masked) ? 0 : 1);
+                            }
+                        }
                     }
                 }
             }

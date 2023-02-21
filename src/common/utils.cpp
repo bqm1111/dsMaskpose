@@ -19,7 +19,15 @@ void floatArr2Str(std::string &str, float *arr, int length)
     }
     str += std::to_string(arr[length]);
 }
-
+float calculate_head_pose_from_raw_output(float *raw)
+{
+    float res = 0;
+    for(int i = 0; i < 62; i++)
+    {
+        res += std::exp(raw[i]) * i;
+    }
+    return (res * 3 - 63);
+}
 gchar *gen_body(int num_vec, gchar *vec)
 {
     JsonBuilder *builder = json_builder_new();
