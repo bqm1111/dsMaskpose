@@ -3,7 +3,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_CUDA_COMPILER /usr/local/cuda-11.5/bin/nvcc)
 
-project(maskPose LANGUAGES CXX CUDA)
+project(FaceDeepStream LANGUAGES CXX CUDA)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -pthread")
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fno-omit-frame-pointer -g -pthread -fsanitize=leak")
 
@@ -13,8 +13,23 @@ find_package(PkgConfig REQUIRED)
 find_package(spdlog REQUIRED)
 
 file(GLOB SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp
+                    ${PROJECT_SOURCE_DIR}/src/*.cu
+                    ${PROJECT_SOURCE_DIR}/src/common/*.cpp
+                    ${PROJECT_SOURCE_DIR}/src/pipeline/*.cpp
+                    ${PROJECT_SOURCE_DIR}/src/deepsort/*.cpp
+                    ${PROJECT_SOURCE_DIR}/src/common/QDTConfig/*.cpp
+                    ${PROJECT_SOURCE_DIR}/src/common/QDTLog/*.cpp
                     )
                     
+include_directories(
+${PROJECT_SOURCE_DIR}/utils
+${PROJECT_SOURCE_DIR}/src/common
+${PROJECT_SOURCE_DIR}/src/common/QDTConfig
+${PROJECT_SOURCE_DIR}/src/common/QDTLog
+${PROJECT_SOURCE_DIR}/src/pipeline
+${PROJECT_SOURCE_DIR}/src/deepsort
+${PROJECT_SOURCE_DIR}/src/mot
+)
 add_executable(${PROJECT_NAME} ${SOURCES})
 pkg_check_modules(Uuid REQUIRED IMPORTED_TARGET uuid)
 include_directories(${Uuid_INCLUDE_DIRS})
@@ -64,4 +79,4 @@ target_link_libraries(${PROJECT_NAME} PkgConfig::KAFKACPP)
 target_compile_options(${PROJECT_NAME} PUBLIC ${KAFKACPP_CFLAGS_OTHER})
 
 # Subdirectory
-# add_subdirectory(src)
+add_subdirectory(src)

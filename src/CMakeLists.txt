@@ -1,0 +1,5 @@
+add_subdirectory(facedetection)
+add_subdirectory(facealignment)
+add_subdirectory(facefeature)
+add_subdirectory(deepsort)
+add_subdirectory(nvdsinfer_customparser)

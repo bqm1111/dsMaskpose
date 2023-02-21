@@ -369,20 +369,10 @@ resnet = ResNet(torchvision.models.resnet.BasicBlock, [2, 2, 2, 2])
 # )
 
 if __name__ == "__main__":
-
-    def load_filtered_state_dict(model, snapshot):
-        # By user apaszke from discuss.pytorch.org
-        model_dict = model.state_dict()
-        snapshot = {k: v for k, v in snapshot.items() if k in model_dict}
-        model_dict.update(snapshot)
-        model.load_state_dict(model_dict)
-        # summary(model, (3, 112, 112))
-
-    load_filtered_state_dict(
-        resnet,
-        model_zoo.load_url("https://download.pytorch.org/models/resnet18-5c106cde.pth"),
-    )
-
-    # img = torch.randn(2, 3, 112, 112)
-    # pre_yaw, pre_pitch, pre_roll = resnet(img) # (2, 1000)
-    # print(pre_yaw.shape)
+    from torchvision.models.resnet import BasicBlock
+    from torchsummary import summary
+    model = MergeResNet(BasicBlock, [2, 2, 2, 2])
+    print(model)
+    # print(summary(model, (3, 112, 112)))
+    
+    

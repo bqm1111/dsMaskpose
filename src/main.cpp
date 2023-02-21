@@ -1,6 +1,12 @@
-#include <iostream>
+#include "faceApp.h"
 
-int main()
+int main(int argc, char *argv[])
 {
-    std::cout << "hello world" << std::endl;
+	QDTLog::init("logs/");
+
+	FaceApp app(argc, argv);
+	app.init();
+	app.run();
+
+	return 0;
 }
